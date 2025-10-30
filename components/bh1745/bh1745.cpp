@@ -1,6 +1,7 @@
 #include "bh1745.h" 
 #include "esphome/core/log.h"
 #include "esphome/core/helpers.h" // Keep this one, it's needed for other macros like LOG_SENSOR
+#include "esphome/core/helpers.h" // Keep this one for logging and templating
 
 namespace esphome {
 namespace bh1745 {
