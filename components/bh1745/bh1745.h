@@ -5,9 +5,9 @@
 #include "esphome/components/i2c/i2c.h"
 
 namespace esphome {
-namespace bh1745 { // RENAMED namespace
+namespace bh1745 {
 
-class BH1745 : public PollingComponent, public i2c::I2CDevice { // RENAMED class
+class BH1745 : public PollingComponent, public i2c::I2CDevice {
  public:
   void set_red_sensor(sensor::Sensor *s) { this->red_sensor_ = s; }
   void set_green_sensor(sensor::Sensor *s) { this->green_sensor_ = s; }

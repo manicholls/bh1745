@@ -1,11 +1,11 @@
-#include "bh1745.h" // RENAMED header file
+#include "bh1745.h" 
 #include "esphome/core/log.h"
 #include "esphome/core/helpers.h"
 
 namespace esphome {
-namespace bh1745 { // RENAMED namespace
+namespace bh1745 {
 
-static const char *const TAG = "bh1745"; // RENAMED TAG
+static const char *const TAG = "bh1745"; 
 
 // BH1745 Register Addresses
 static const uint8_t SYSTEM_CONTROL_ADDR = 0x40;
@@ -18,7 +18,7 @@ static const uint8_t SC_RESET_MASK = 0b10000000;
 static const uint8_t MC2_MEASURE_BIT = 0b10000000;
 static const uint8_t MC2_RGBC_EN_BIT = 0b00010000;
 
-void BH1745::setup() { // Uses new class name
+void BH1745::setup() {
   ESP_LOGCONFIG(TAG, "Setting up BH1745 Color Sensor...");
 
   if (!this->write_byte(SYSTEM_CONTROL_ADDR, SC_RESET_MASK)) {
@@ -47,7 +47,7 @@ void BH1745::setup() { // Uses new class name
   }
 }
 
-void BH1745::dump_config() { // Uses new class name
+void BH1745::dump_config() {
   ESP_LOGCONFIG(TAG, "BH1745 Color Sensor:");
   LOG_I2C_DEVICE(this); 
   if (this->is_failed()) {
@@ -61,7 +61,7 @@ void BH1745::dump_config() { // Uses new class name
   LOG_SENSOR("  Illuminance (Lux)", this->illuminance_sensor_);
 }
 
-void BH1745::update() { // Uses new class name
+void BH1745::update() {
   if (!this->read_sensor_data_()) {
     return;
   }
@@ -72,7 +72,6 @@ void BH1745::update() { // Uses new class name
     this->illuminance_sensor_->publish_state(lux);
   }
   
-  // Publish color channels as scaled values (normalized counts)
   float normalization_factor = (float)this->integration_time_ms_ * (float)this->gain_;
 
   if (this->red_sensor_ != nullptr) {
@@ -86,7 +85,7 @@ void BH1745::update() { // Uses new class name
   }
 }
 
-bool BH1745::read_sensor_data_() { // Uses new class name
+bool BH1745::read_sensor_data_() {
   uint8_t data[8];
   
   if (!this->read_bytes(RED_DATA_LSB_ADDR, data, 8)) {
@@ -104,8 +103,7 @@ bool BH1745::read_sensor_data_() { // Uses new class name
   return true;
 }
 
-float BH1745::calculate_lux_(uint16_t r, uint16_t g, uint16_t b, uint16_t clear) { // Uses new class name
-  // --- Compensated Lux Calculation for BH1745 ---
+float BH1745::calculate_lux_(uint16_t r, uint16_t g, uint16_t b, uint16_t clear) {
   
   float normalization_factor = (float)this->integration_time_ms_ * (float)this->gain_;
   if (normalization_factor == 0.0f) return 0.0f;
@@ -115,14 +113,12 @@ float BH1745::calculate_lux_(uint16_t r, uint16_t g, uint16_t b, uint16_t clear)
   float norm_b = (float)b / normalization_factor;
   float norm_c = (float)clear / normalization_factor;
   
-  // Empirical coefficients (as derived from common BH1745 libraries)
   const float COEFFICIENT_A = 0.500f; 
   const float COEFFICIENT_B = 1.000f; 
   const float COEFFICIENT_C = -0.500f; 
   const float COEFFICIENT_D = 0.58f; 
   const float LUX_SCALE = 10000.0f; 
 
-  // Apply the compensated matrix formula
   float compensated_lux = (COEFFICIENT_A * norm_r) + 
                           (COEFFICIENT_B * norm_g) + 
                           (COEFFICIENT_C * norm_b) +
