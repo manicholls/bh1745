@@ -42,17 +42,22 @@ void BH1745::setup() {
 void BH1745::dump_config() {
   ESP_LOGCONFIG(TAG, "BH1745 Color Sensor:");
   
+  // LOG_I2C_DEVICE still requires only the component pointer for your version
   LOG_I2C_DEVICE(this); 
   
-  // ✅ FIX: Access the simple member variable  
+  if (this->is_failed()) {
+    ESP_LOGE(TAG, "Communication with BH1745 failed!");
+  }
+  
+  // Access the simple member variables
   ESP_LOGCONFIG(TAG, "  Integration Time: %u ms", this->integration_time_ms_);
   ESP_LOGCONFIG(TAG, "  Gain: %ux", this->gain_);
   
-  // ✅ FINAL ATTEMPT FIX: Use the simplest working two-argument form: LOG_SENSOR(TAG, SENSOR)
-  LOG_SENSOR(TAG, this->red_sensor_);
-  LOG_SENSOR(TAG, this->green_sensor_);
-  LOG_SENSOR(TAG, this->blue_sensor_);
-  LOG_SENSOR(TAG, this->illuminance_sensor_);
+  // ✅ FINAL FIX: Enforce the 3-argument structure (LEVEL, TAG, SENSOR)
+  LOG_SENSOR(ESPHOME_LOG_LEVEL_CONFIG, TAG, this->red_sensor_);
+  LOG_SENSOR(ESPHOME_LOG_LEVEL_CONFIG, TAG, this->green_sensor_);
+  LOG_SENSOR(ESPHOME_LOG_LEVEL_CONFIG, TAG, this->blue_sensor_);
+  LOG_SENSOR(ESPHOME_LOG_LEVEL_CONFIG, TAG, this->illuminance_sensor_);
 }
 
 void BH1745::update() {
