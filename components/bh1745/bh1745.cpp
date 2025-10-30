@@ -53,12 +53,12 @@ void BH1745::dump_config() {
   ESP_LOGCONFIG(TAG, "  Integration Time: %u ms", this->integration_time_ms_);
   ESP_LOGCONFIG(TAG, "  Gain: %ux", this->gain_);
   
-  // ✅ FINAL FIX: Use LOG_SENSOR_WITH_UNIT which correctly handles (LEVEL, TAG, SENSOR) 
-  //                and resolves the internal type conflict.
-  LOG_SENSOR_WITH_UNIT(ESPHOME_LOG_LEVEL_CONFIG, TAG, this->red_sensor_);
-  LOG_SENSOR_WITH_UNIT(ESPHOME_LOG_LEVEL_CONFIG, TAG, this->green_sensor_);
-  LOG_SENSOR_WITH_UNIT(ESPHOME_LOG_LEVEL_CONFIG, TAG, this->blue_sensor_);
-  LOG_SENSOR_WITH_UNIT(ESPHOME_LOG_LEVEL_CONFIG, TAG, this->illuminance_sensor_);
+  // ✅ FINAL, DEFINITIVE FIX: Use the simplest two-argument structure that does not clash with the level's integer type.
+  //    The descriptive string acts as the first argument, and the sensor pointer is the second.
+  LOG_SENSOR("  Red", this->red_sensor_);
+  LOG_SENSOR("  Green", this->green_sensor_);
+  LOG_SENSOR("  Blue", this->blue_sensor_);
+  LOG_SENSOR("  Illuminance (Lux)", this->illuminance_sensor_);
 }
 
 void BH1745::update() {
