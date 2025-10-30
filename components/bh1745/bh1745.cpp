@@ -43,7 +43,7 @@ void BH1745::dump_config() {
   ESP_LOGCONFIG(TAG, "BH1745 Color Sensor:");
   
   // ✅ FIX: Use ESPHOME_LOG_LEVEL_CONFIG for LOG_I2C_DEVICE
-  LOG_I2C_DEVICE(ESPHOME_LOG_LEVEL_CONFIG, this); 
+  LOG_I2C_DEVICE(this); 
   
   if (this->is_failed()) {
     ESP_LOGE(TAG, "Communication with BH1745 failed!");
