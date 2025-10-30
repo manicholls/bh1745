@@ -32,7 +32,7 @@ void BH1745::setup() {
 
 void BH1745::dump_config() {
   ESP_LOGCONFIG(TAG, "BH1745 Color Sensor:");
-  LOG_I2C_DEVICE(LOG_LEVEL_CONFIG, this); 
+  LOG_I2C_DEVICE(this); 
   // ... error check ...
   
   // ✅ FIX: Access the simple member variable
