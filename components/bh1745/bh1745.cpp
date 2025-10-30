@@ -27,19 +27,25 @@ void BH1745::setup() {
   }
   delay(10); 
 
+  // ✅ FIX: Get the value from the TEMPLATABLE_VALUE object
+  uint32_t integration_time_ms = this->integration_time_.value_or(160); 
+
   // Set Integration Time
   uint8_t it_reg_value = 0x00;
-  if (this->integration_time_ms_ == 320) it_reg_value = 0x01;
-  else if (this->integration_time_ms_ == 640) it_reg_value = 0x02;
-  else if (this->integration_time_ms_ == 1280) it_reg_value = 0x03;
+  if (integration_time_ms == 320) it_reg_value = 0x01;
+  else if (integration_time_ms == 640) it_reg_value = 0x02;
+  else if (integration_time_ms == 1280) it_reg_value = 0x03;
 
   if (!this->write_byte(MODE_CONTROL1_ADDR, it_reg_value)) {
     this->mark_failed();
     return;
   }
 
+  // ✅ FIX: Get the value from the TEMPLATABLE_VALUE object
+  uint8_t gain_value = this->gain_.value_or(1);
+  
   // Set Gain (1x or 32x) and Enable RGBC measurement
-  uint8_t gain_reg_value = (this->gain_ == 32) ? 0b00000010 : 0b00000000;
+  uint8_t gain_reg_value = (gain_value == 32) ? 0b00000010 : 0b00000000;
   uint8_t mc2_value = gain_reg_value | MC2_RGBC_EN_BIT | MC2_MEASURE_BIT;
   if (!this->write_byte(MODE_CONTROL2_ADDR, mc2_value)) {
     this->mark_failed();
@@ -53,8 +59,9 @@ void BH1745::dump_config() {
   if (this->is_failed()) {
     ESP_LOGE(TAG, "Communication with BH1745 failed!");
   }
-  ESP_LOGCONFIG(TAG, "  Integration Time: %u ms", this->integration_time_ms_);
-  ESP_LOGCONFIG(TAG, "  Gain: %ux", this->gain_);
+  // ✅ FIX: Use .value_or() to dump config values
+  ESP_LOGCONFIG(TAG, "  Integration Time: %u ms", this->integration_time_.value_or(0));
+  ESP_LOGCONFIG(TAG, "  Gain: %ux", this->gain_.value_or(0));
   LOG_SENSOR("  Red", this->red_sensor_);
   LOG_SENSOR("  Green", this->green_sensor_);
   LOG_SENSOR("  Blue", this->blue_sensor_);
@@ -66,13 +73,17 @@ void BH1745::update() {
     return;
   }
 
+  // ✅ FIX: Get the values needed for normalization
+  uint32_t integration_time_ms = this->integration_time_.value_or(160);
+  uint8_t gain_value = this->gain_.value_or(1);
+
   float lux = this->calculate_lux_(this->red_value_, this->green_value_, this->blue_value_, this->clear_value_);
   
   if (this->illuminance_sensor_ != nullptr) {
     this->illuminance_sensor_->publish_state(lux);
   }
   
-  float normalization_factor = (float)this->integration_time_ms_ * (float)this->gain_;
+  float normalization_factor = (float)integration_time_ms * (float)gain_value;
 
   if (this->red_sensor_ != nullptr) {
     this->red_sensor_->publish_state((float)this->red_value_ / normalization_factor);
@@ -105,7 +116,8 @@ bool BH1745::read_sensor_data_() {
 
 float BH1745::calculate_lux_(uint16_t r, uint16_t g, uint16_t b, uint16_t clear) {
   
-  float normalization_factor = (float)this->integration_time_ms_ * (float)this->gain_;
+  // ✅ FIX: Get the values needed for normalization
+  float normalization_factor = (float)this->integration_time_.value_or(160) * (float)this->gain_.value_or(1);
   if (normalization_factor == 0.0f) return 0.0f;
 
   float norm_r = (float)r / normalization_factor;
