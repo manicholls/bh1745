@@ -5,9 +5,9 @@
 #include "esphome/components/i2c/i2c.h"
 
 namespace esphome {
-namespace bh1745_color {
+namespace bh1745 { // RENAMED namespace
 
-class BH1745Color : public PollingComponent, public i2c::I2CDevice {
+class BH1745 : public PollingComponent, public i2c::I2CDevice { // RENAMED class
  public:
   void set_red_sensor(sensor::Sensor *s) { this->red_sensor_ = s; }
   void set_green_sensor(sensor::Sensor *s) { this->green_sensor_ = s; }
@@ -22,7 +22,6 @@ class BH1745Color : public PollingComponent, public i2c::I2CDevice {
   float get_setup_priority() const override { return setup_priority::BUS; }
 
  protected:
-  // Internal methods for I2C communication and calculations
   bool read_sensor_data_();
   float calculate_lux_(uint16_t r, uint16_t g, uint16_t b, uint16_t clear);
 
@@ -39,5 +38,5 @@ class BH1745Color : public PollingComponent, public i2c::I2CDevice {
   sensor::Sensor *illuminance_sensor_{nullptr};
 };
 
-}  // namespace bh1745_color
+}  // namespace bh1745
 }  // namespace esphome

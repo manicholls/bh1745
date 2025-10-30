@@ -1,11 +1,11 @@
-#include "bh1745_color.h"
+#include "bh1745.h" // RENAMED header file
 #include "esphome/core/log.h"
 #include "esphome/core/helpers.h"
 
 namespace esphome {
-namespace bh1745_color {
+namespace bh1745 { // RENAMED namespace
 
-static const char *const TAG = "bh1745_color";
+static const char *const TAG = "bh1745"; // RENAMED TAG
 
 // BH1745 Register Addresses
 static const uint8_t SYSTEM_CONTROL_ADDR = 0x40;
@@ -18,7 +18,7 @@ static const uint8_t SC_RESET_MASK = 0b10000000;
 static const uint8_t MC2_MEASURE_BIT = 0b10000000;
 static const uint8_t MC2_RGBC_EN_BIT = 0b00010000;
 
-void BH1745Color::setup() {
+void BH1745::setup() { // Uses new class name
   ESP_LOGCONFIG(TAG, "Setting up BH1745 Color Sensor...");
 
   if (!this->write_byte(SYSTEM_CONTROL_ADDR, SC_RESET_MASK)) {
@@ -47,7 +47,7 @@ void BH1745Color::setup() {
   }
 }
 
-void BH1745Color::dump_config() {
+void BH1745::dump_config() { // Uses new class name
   ESP_LOGCONFIG(TAG, "BH1745 Color Sensor:");
   LOG_I2C_DEVICE(this); 
   if (this->is_failed()) {
@@ -61,12 +61,11 @@ void BH1745Color::dump_config() {
   LOG_SENSOR("  Illuminance (Lux)", this->illuminance_sensor_);
 }
 
-void BH1745Color::update() {
+void BH1745::update() { // Uses new class name
   if (!this->read_sensor_data_()) {
     return;
   }
 
-  // Calculate Lux using the compensated formula
   float lux = this->calculate_lux_(this->red_value_, this->green_value_, this->blue_value_, this->clear_value_);
   
   if (this->illuminance_sensor_ != nullptr) {
@@ -87,7 +86,7 @@ void BH1745Color::update() {
   }
 }
 
-bool BH1745Color::read_sensor_data_() {
+bool BH1745::read_sensor_data_() { // Uses new class name
   uint8_t data[8];
   
   if (!this->read_bytes(RED_DATA_LSB_ADDR, data, 8)) {
@@ -105,40 +104,34 @@ bool BH1745Color::read_sensor_data_() {
   return true;
 }
 
-float BH1745Color::calculate_lux_(uint16_t r, uint16_t g, uint16_t b, uint16_t clear) {
+float BH1745::calculate_lux_(uint16_t r, uint16_t g, uint16_t b, uint16_t clear) { // Uses new class name
   // --- Compensated Lux Calculation for BH1745 ---
   
-  // 1. Calculate the normalization factor based on integration time and gain.
-  // The raw counts must be normalized to a standard measurement environment.
   float normalization_factor = (float)this->integration_time_ms_ * (float)this->gain_;
-  if (normalization_factor == 0.0f) return 0.0f; // Prevent division by zero
+  if (normalization_factor == 0.0f) return 0.0f;
 
   float norm_r = (float)r / normalization_factor;
   float norm_g = (float)g / normalization_factor;
   float norm_b = (float)b / normalization_factor;
   float norm_c = (float)clear / normalization_factor;
   
-  // The coefficients (A, B, C, D) are empirical values used in various 
-  // BH1745 libraries to approximate the photometric curve (Y-function).
-  // These coefficients are critical for accuracy but may need fine-tuning.
-  const float COEFFICIENT_A = 0.500f; // Red coefficient
-  const float COEFFICIENT_B = 1.000f; // Green coefficient (usually highest)
-  const float COEFFICIENT_C = -0.500f; // Blue coefficient (often negative for compensation)
-  const float COEFFICIENT_D = 0.58f; // Clear channel coefficient
-  const float LUX_SCALE = 10000.0f; // Scaling factor for the BH1745's specific sensitivity range
+  // Empirical coefficients (as derived from common BH1745 libraries)
+  const float COEFFICIENT_A = 0.500f; 
+  const float COEFFICIENT_B = 1.000f; 
+  const float COEFFICIENT_C = -0.500f; 
+  const float COEFFICIENT_D = 0.58f; 
+  const float LUX_SCALE = 10000.0f; 
 
-  // 2. Apply the compensated matrix formula
+  // Apply the compensated matrix formula
   float compensated_lux = (COEFFICIENT_A * norm_r) + 
                           (COEFFICIENT_B * norm_g) + 
                           (COEFFICIENT_C * norm_b) +
                           (COEFFICIENT_D * norm_c);
 
-  // 3. Apply the final scaling
   float lux = compensated_lux * LUX_SCALE;
   
-  // Ensure the output is non-negative
   return std::max(0.0f, lux);
 }
 
-}  // namespace bh1745_color
+}  // namespace bh1745
 }  // namespace esphome
