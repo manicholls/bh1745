@@ -3,7 +3,6 @@
 #include "esphome/core/component.h"
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/components/i2c/i2c.h"
-#include "esphome/core/helpers.h"
 
 namespace esphome {
 namespace bh1745 {
@@ -15,9 +14,9 @@ class BH1745 : public PollingComponent, public i2c::I2CDevice {
   void set_blue_sensor(sensor::Sensor *s) { this->blue_sensor_ = s; }
   void set_illuminance_sensor(sensor::Sensor *s) { this->illuminance_sensor_ = s; }
   
-  // ✅ FIX: Use TEMPLATABLE_VALUE to properly receive config values from Python
-  TEMPLATABLE_VALUE(uint32_t, integration_time);
-  TEMPLATABLE_VALUE(uint8_t, gain);
+  // ✅ FIX: Use simple setters to avoid the TEMPLATABLE_VALUE macro issue
+  void set_integration_time(uint32_t integration_time_ms) { this->integration_time_ms_ = integration_time_ms; }
+  void set_gain(uint8_t gain) { this->gain_ = gain; }
 
   void setup() override;
   void update() override;
@@ -28,6 +27,8 @@ class BH1745 : public PollingComponent, public i2c::I2CDevice {
   bool read_sensor_data_();
   float calculate_lux_(uint16_t r, uint16_t g, uint16_t b, uint16_t clear);
 
+  uint32_t integration_time_ms_; // Now stored as a simple variable
+  uint8_t gain_;                 // Now stored as a simple variable
   uint16_t red_value_{0};
   uint16_t green_value_{0};
   uint16_t blue_value_{0};
