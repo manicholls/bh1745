@@ -63,10 +63,10 @@ void BH1745::dump_config() {
   //    (Assuming 'prefix' is the descriptive string and 'type' is the sensor itself)
   //    We'll use the two arguments that used to work in older versions: (Description, Sensor Pointer)
   //    This version is necessary because passing the level (integer) fails type checking.
-  LOG_SENSOR("  Red", this->red_sensor_);
-  LOG_SENSOR("  Green", this->green_sensor_);
-  LOG_SENSOR("  Blue", this->blue_sensor_);
-  LOG_SENSOR("  Illuminance (Lux)", this->illuminance_sensor_);
+  LOG_SENSOR(TAG, "  Red", this->red_sensor_);
+  LOG_SENSOR(TAG, "  Green", this->green_sensor_);
+  LOG_SENSOR(TAG, "  Blue", this->blue_sensor_);
+  LOG_SENSOR(TAG, "  Illuminance (Lux)", this->illuminance_sensor_);
 }
 
 void BH1745::update() {
