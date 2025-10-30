@@ -42,7 +42,7 @@ void BH1745::setup() {
 void BH1745::dump_config() {
   ESP_LOGCONFIG(TAG, "BH1745 Color Sensor:");
   
-  // LOG_I2C_DEVICE still requires only the component pointer for your version
+  // 1. LOG_I2C_DEVICE: Requires one argument for your version
   LOG_I2C_DEVICE(this); 
   
   if (this->is_failed()) {
@@ -53,12 +53,12 @@ void BH1745::dump_config() {
   ESP_LOGCONFIG(TAG, "  Integration Time: %u ms", this->integration_time_ms_);
   ESP_LOGCONFIG(TAG, "  Gain: %ux", this->gain_);
   
-  // ✅ FINAL, DEFINITIVE FIX: Use the simplest two-argument structure that does not clash with the level's integer type.
-  //    The descriptive string acts as the first argument, and the sensor pointer is the second.
-  LOG_SENSOR("  Red", this->red_sensor_);
-  LOG_SENSOR("  Green", this->green_sensor_);
-  LOG_SENSOR("  Blue", this->blue_sensor_);
-  LOG_SENSOR("  Illuminance (Lux)", this->illuminance_sensor_);
+  // 2. LOG_SENSOR: Requires three arguments (LEVEL, TAG, SENSOR)
+  //    This structure satisfies the 'requires 3 arguments' error without causing the type mismatch.
+  LOG_SENSOR(ESPHOME_LOG_LEVEL_CONFIG, TAG, this->red_sensor_);
+  LOG_SENSOR(ESPHOME_LOG_LEVEL_CONFIG, TAG, this->green_sensor_);
+  LOG_SENSOR(ESPHOME_LOG_LEVEL_CONFIG, TAG, this->blue_sensor_);
+  LOG_SENSOR(ESPHOME_LOG_LEVEL_CONFIG, TAG, this->illuminance_sensor_);
 }
 
 void BH1745::update() {
