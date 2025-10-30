@@ -5,6 +5,7 @@ Tested on ESPHome 10.3 using a Pimoroni Enviro Indoor.
 
 Add the following to your YAML:
 
+```yaml
 external_components:
   - source: github://manicholls/bh1745@main
     components: [bh1745]
@@ -35,5 +36,7 @@ sensor:
       name: "Ambient Green Channel"
     blue:
       name: "Ambient Blue Channel"
+```
+
 
 Full configuration for an Enviro Indoor can be found in my esphome repo.
