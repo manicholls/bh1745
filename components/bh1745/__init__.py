@@ -28,8 +28,7 @@ def to_code(config):
     yield cg.register_component(var, config)
     yield i2c.register_i2c_device(var, config)
 
-    # ✅ FIX: Pass the raw integer millisecond value to the C++ setter
-    integration_time_ms = config[CONF_INTEGRATION_TIME].total_milliseconds
+    integration_time_ms = config[CONF_INTEGRATION_TIME]
     cg.add(var.set_integration_time(integration_time_ms))
 
     if config[CONF_GAIN] == '32x':
