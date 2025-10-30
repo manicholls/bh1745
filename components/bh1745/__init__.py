@@ -11,11 +11,14 @@ BH1745 = bh1745_ns.class_('BH1745', cg.Component, i2c.I2CDevice)
 CONF_INTEGRATION_TIME = "integration_time"
 CONF_GAIN = "gain"
 
-# Main component configuration schema (Does NOT include sensor definitions)
+# Main component configuration schema 
 CONFIG_SCHEMA = cv.Schema({
     cv.GenerateID(): cv.declare_id(BH1745),
+    
     cv.Optional(CONF_INTEGRATION_TIME, default='160ms'): 
-        cv.All(cv.TimePeriod.from_milliseconds, cv.Range(min=160, max=1280)),
+        cv.All(cv.positive_time_period_milliseconds, cv.Range(min=160, max=1280)),
+    # ------------------------
+    
     cv.Optional(CONF_GAIN, default='1x'): cv.one_of('1x', '32x'),
     
 }).extend(cv.polling_component_schema('60s')).extend(i2c.i2c_device_schema(0x38))
@@ -25,10 +28,12 @@ def to_code(config):
     yield cg.register_component(var, config)
     yield i2c.register_i2c_device(var, config)
 
-    # Apply configuration to the C++ component
+    # config[CONF_INTEGRATION_TIME] is already an integer (milliseconds) here
     cg.add(var.set_integration_time(config[CONF_INTEGRATION_TIME]))
 
     if config[CONF_GAIN] == '32x':
         cg.add(var.set_gain(32))
     else:
         cg.add(var.set_gain(1))
+
+# Sensor registration validation is still done in sensor.py
