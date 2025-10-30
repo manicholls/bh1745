@@ -6,6 +6,15 @@ namespace esphome {
 namespace bh1745 {
 
 static const char *const TAG = "bh1745"; 
+static const uint8_t SYSTEM_CONTROL_ADDR = 0x40;
+static const uint8_t MODE_CONTROL1_ADDR = 0x41; // <-- This was the missing constant!
+static const uint8_t MODE_CONTROL2_ADDR = 0x42;
+static const uint8_t RED_DATA_LSB_ADDR = 0x50;
+
+// Configuration bits/masks
+static const uint8_t SC_RESET_MASK = 0b10000000;
+static const uint8_t MC2_MEASURE_BIT = 0b10000000;
+static const uint8_t MC2_RGBC_EN_BIT = 0b00010000;
 // ... register definitions ...
 
 void BH1745::setup() {
