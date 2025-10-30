@@ -3,6 +3,9 @@
 #include "esphome/core/component.h"
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/components/i2c/i2c.h"
+#include "esphome/core/helpers.h" 
+// ✅ FIX: Include log.h to make LOG_LEVEL_CONFIG available
+#include "esphome/core/log.h"
 
 namespace esphome {
 namespace bh1745 {
