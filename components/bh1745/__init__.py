@@ -12,9 +12,11 @@ CONF_GAIN = "gain"
 CONFIG_SCHEMA = cv.Schema({
     cv.GenerateID(): cv.declare_id(BH1745),
     
-    # FIX: Correctly use positive_time_period_milliseconds to parse the time string
     cv.Optional(CONF_INTEGRATION_TIME, default='160ms'): 
-        cv.All(cv.positive_time_period_milliseconds, cv.Range(min=160, max=1280)),
+        # ✅ FIX: Use lambda to ensure the integer millisecond value is used for cv.Range
+        cv.All(cv.positive_time_period_milliseconds, 
+               lambda value: value.total_milliseconds, 
+               cv.Range(min=160, max=1280)),
     
     cv.Optional(CONF_GAIN, default='1x'): cv.one_of('1x', '32x'),
     
@@ -26,8 +28,9 @@ def to_code(config):
     yield cg.register_component(var, config)
     yield i2c.register_i2c_device(var, config)
 
-    # config[CONF_INTEGRATION_TIME] is already the integer millisecond value
-    cg.add(var.set_integration_time(config[CONF_INTEGRATION_TIME]))
+    # ✅ FIX: Pass the raw integer millisecond value to the C++ setter
+    integration_time_ms = config[CONF_INTEGRATION_TIME].total_milliseconds
+    cg.add(var.set_integration_time(integration_time_ms))
 
     if config[CONF_GAIN] == '32x':
         cg.add(var.set_gain(32))
