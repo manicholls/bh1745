@@ -55,17 +55,22 @@ void BH1745::setup() {
 
 void BH1745::dump_config() {
   ESP_LOGCONFIG(TAG, "BH1745 Color Sensor:");
-  LOG_I2C_DEVICE(this); 
+  
+  LOG_I2C_DEVICE(LOG_LEVEL_CONFIG, this); 
+  
   if (this->is_failed()) {
     ESP_LOGE(TAG, "Communication with BH1745 failed!");
   }
-  // ✅ FIX: Use .value_or() to dump config values
+  
+  // Use .value_or() to dump config values
   ESP_LOGCONFIG(TAG, "  Integration Time: %u ms", this->integration_time_.value_or(0));
   ESP_LOGCONFIG(TAG, "  Gain: %ux", this->gain_.value_or(0));
-  LOG_SENSOR("  Red", this->red_sensor_);
-  LOG_SENSOR("  Green", this->green_sensor_);
-  LOG_SENSOR("  Blue", this->blue_sensor_);
-  LOG_SENSOR("  Illuminance (Lux)", this->illuminance_sensor_);
+  
+  // LOG_SENSOR requires LOG_LEVEL_CONFIG
+  LOG_SENSOR(LOG_LEVEL_CONFIG, "  Red", this->red_sensor_);
+  LOG_SENSOR(LOG_LEVEL_CONFIG, "  Green", this->green_sensor_);
+  LOG_SENSOR(LOG_LEVEL_CONFIG, "  Blue", this->blue_sensor_);
+  LOG_SENSOR(LOG_LEVEL_CONFIG, "  Illuminance (Lux)", this->illuminance_sensor_);
 }
 
 void BH1745::update() {
@@ -73,7 +78,6 @@ void BH1745::update() {
     return;
   }
 
-  // ✅ FIX: Get the values needed for normalization
   uint32_t integration_time_ms = this->integration_time_.value_or(160);
   uint8_t gain_value = this->gain_.value_or(1);
 
