@@ -13,7 +13,6 @@ CONFIG_SCHEMA = cv.Schema({
     cv.GenerateID(): cv.declare_id(BH1745),
     
     cv.Optional(CONF_INTEGRATION_TIME, default='160ms'): 
-        # ✅ FIX: Use lambda to ensure the integer millisecond value is used for cv.Range
         cv.All(cv.positive_time_period_milliseconds, 
                lambda value: value.total_milliseconds, 
                cv.Range(min=160, max=1280)),
