@@ -48,7 +48,6 @@ void BH1745::setup() {
 void BH1745::dump_config() {
   ESP_LOGCONFIG(TAG, "BH1745 Color Sensor:");
   
-  // LOG_I2C_DEVICE requires only the component pointer for your version
   LOG_I2C_DEVICE(this); 
   
   if (this->is_failed()) {
@@ -58,11 +57,7 @@ void BH1745::dump_config() {
   // Access the simple member variables
   ESP_LOGCONFIG(TAG, "  Integration Time: %u ms", this->integration_time_ms_);
   ESP_LOGCONFIG(TAG, "  Gain: %ux", this->gain_);
-  
-  // ✅ FINAL DEFINITIVE FIX: Use the specific arguments that fit the macro definition.
-  //    (Assuming 'prefix' is the descriptive string and 'type' is the sensor itself)
-  //    We'll use the two arguments that used to work in older versions: (Description, Sensor Pointer)
-  //    This version is necessary because passing the level (integer) fails type checking.
+
   LOG_SENSOR(TAG, "  Red", this->red_sensor_);
   LOG_SENSOR(TAG, "  Green", this->green_sensor_);
   LOG_SENSOR(TAG, "  Blue", this->blue_sensor_);
@@ -137,5 +132,5 @@ float BH1745::calculate_lux_(uint16_t r, uint16_t g, uint16_t b, uint16_t clear)
   return std::max(0.0f, lux);
 }
 
-}  // namespace bh1745
-}  // namespace esphome
+}
+}
