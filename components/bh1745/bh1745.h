@@ -4,7 +4,6 @@
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/components/i2c/i2c.h"
 #include "esphome/core/helpers.h" 
-// ✅ FIX: Include log.h to make LOG_LEVEL_CONFIG available
 #include "esphome/core/log.h"
 
 namespace esphome {
@@ -17,7 +16,6 @@ class BH1745 : public PollingComponent, public i2c::I2CDevice {
   void set_blue_sensor(sensor::Sensor *s) { this->blue_sensor_ = s; }
   void set_illuminance_sensor(sensor::Sensor *s) { this->illuminance_sensor_ = s; }
   
-  // ✅ FIX: Use simple setters to avoid the TEMPLATABLE_VALUE macro issue
   void set_integration_time(uint32_t integration_time_ms) { this->integration_time_ms_ = integration_time_ms; }
   void set_gain(uint8_t gain) { this->gain_ = gain; }
 
